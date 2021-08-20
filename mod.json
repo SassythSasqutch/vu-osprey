@@ -1,0 +1,14 @@
+{
+	"Name": "MV-22B Osprey",
+	"Description": "Loads and replaces the Back to Karkand F-35B model with the MV-22B model from the campaign, adding 24 passenger seats.",
+	"Version": "0.1",
+	"Authors": "SassythSasqutch",
+	"HasVeniceEXT": true,
+	"HasWebUI": false,
+	"Dependencies": {
+		"veniceext": "^1.0.0"
+	},
+	"Tags": [
+        "mv22b-osprey"
+	]
+}
