@@ -66,39 +66,64 @@ Events:Subscribe('Partition:Loaded', function(partition)
 
         if instance.instanceGuid == Guid('5400AEEF-4B57-7EF1-32EE-FB6240FF2F61') then
 
-            print('Found F-35B mesh...')
+            --print('Found F-35B mesh...')
             lightningMesh = CompositeMeshAsset(instance)
 
         end
 
         if instance.instanceGuid == Guid('992001FC-266E-E61A-02BF-623814E3B09F') then
 
-            print('Found MV-22B body mesh...')
+            --print('Found MV-22B body mesh...')
             ospreyMesh = RigidMeshAsset(instance)
 
         end
 
         if instance.instanceGuid == Guid('73EB0373-2F17-6305-05BF-952BED53A0E7') then
 
-            print('Found F-35B chassis component data...')
+            --print('Found F-35B chassis component data...')
             lightningChassisComponentData = ChassisComponentData(instance)
+
+        end
+
+        if instance.instanceGuid == Guid('542473D7-5DA2-CBA1-6995-D808D2293FE3') then
+
+            ospreyLeftNacelleMesh = RigidMeshAsset(instance)
+
+        end
+
+        if instance.instanceGuid == Guid('3044BF51-3C4B-635E-485B-7A2633D1B6C5') then
+
+            ospreyRightNacelleMesh = RigidMeshAsset(instance)
 
         end
 
         if instance.typeInfo.name == 'MeshComponentData' and instance.partitionGuid == Guid('EB06DA1E-4B21-11E0-AC22-92ED36F00269') then
 
-            print('Found weapon/weapon pylon mesh...')
+            --print('Found weapon/weapon pylon mesh...')
             table.insert(weaponMeshInstances, MeshComponentData(instance))
+
+        end
+
+        if instance.instanceGuid == Guid('2872F88C-F9EE-4A3C-8078-514401B5897C') then
+
+            thirdPersonCameraComponentData = CameraComponentData(instance)
 
         end
 
     end
 
-    if replaced == nil and lightningMesh ~= nil and ospreyMesh ~= nil and lightningChassisComponentData ~= nil and #weaponMeshInstances == 6 then
+    if finished == nil 
+    and lightningMesh ~= nil 
+    and ospreyMesh ~= nil 
+    and lightningChassisComponentData ~= nil 
+    and ospreyLeftNacelleMesh ~= nil
+    and ospreyRightNacelleMesh ~= nil
+    and thirdPersonCameraComponentData ~= nil
+    and #weaponMeshInstances == 6 then
 
         -- Replace main chassis
 
-        print('Removing F-35 mesh, adding MV-22 mesh...')
+        --print('Removing F-35 mesh, adding MV-22 mesh...')
 
         lightningMesh:ReplaceReferences(ospreyMesh)
 
@@ -120,10 +145,10 @@ Events:Subscribe('Partition:Loaded', function(partition)
             Vec3(1,0,0),
             Vec3(0,1,0),
             Vec3(0,0,1),
-            Vec3(0,5,-8)
+            Vec3(7.8,2.82,0.67)
         )
-        --ospreyLeftNacelleMeshComponentData.mesh = 
-        --lightningChassisComponentData.components:add(ospreyLeftNacelleMeshComponentData)
+        ospreyLeftNacelleMeshComponentData.mesh = ospreyLeftNacelleMesh
+        lightningChassisComponentData.components:add(ospreyLeftNacelleMeshComponentData)
 
         -- Add right nacelle
 
@@ -132,22 +157,38 @@ Events:Subscribe('Partition:Loaded', function(partition)
             Vec3(1,0,0),
             Vec3(0,1,0),
             Vec3(0,0,1),
-            Vec3(0,5,8)
+            Vec3(-7.8,2.82,0.67)
         )
-        --ospreyLeftNacelleMeshComponentData.mesh = 
-        --lightningChassisComponentData.components:add(ospreyLeftNacelleMeshComponentData)
+        ospreyLeftNacelleMeshComponentData.mesh = ospreyRightNacelleMesh
+        lightningChassisComponentData.components:add(ospreyLeftNacelleMeshComponentData)
+
+        -- Add ramp (down posn)
+
+        -- Add board (???)
 
         -- Remove F-35B weapons and weapon pylons
 
         for _, weapon in pairs(weaponMeshInstances) do
 
-            print('Excluding weapon/weapon pylon \''..RigidMeshAsset(weapon.mesh).name..'\'...')
+            --print('Excluding weapon/weapon pylon \''..RigidMeshAsset(weapon.mesh).name..'\'...')
             weapon:MakeWritable()
             weapon.excluded = true
 
         end
 
-        replaced = true
+        -- Move first person camera to right (pilot's) seat
+
+        -- Move third person camera further away, higher up
+
+        thirdPersonCameraComponentData:MakeWritable()
+        thirdPersonCameraComponentData.transform = LinearTransform(
+            Vec3(1,0,0),
+            Vec3(0,1,0),
+            Vec3(0,0,1),
+            Vec3(0,2.5,-7)
+        )
+
+        finished = true
 
     end
 
